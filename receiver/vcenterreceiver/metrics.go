@@ -16,6 +16,7 @@ package vcenterreceiver // import "github.com/open-telemetry/opentelemetry-colle
 
 import (
 	"context"
+	"log"
 
 	"github.com/vmware/govmomi/performance"
 	"github.com/vmware/govmomi/vim25/mo"
@@ -42,6 +43,7 @@ func (v *vcenterMetricScraper) recordHostSystemMemoryUsage(
 
 	ncpu := int32(h.NumCpuCores)
 	cpuUsage := z.OverallCpuUsage
+
 	cpuUtilization := 100 * float64(z.OverallCpuUsage) / float64(ncpu*h.CpuMhz)
 
 	v.mb.RecordVcenterHostCPUUsageDataPoint(now, int64(cpuUsage))
@@ -57,6 +59,12 @@ func (v *vcenterMetricScraper) recordVMUsages(
 	balloonedMem := vm.Summary.QuickStats.BalloonedMemory
 	swappedMem := vm.Summary.QuickStats.SwappedMemory
 	swappedSSDMem := vm.Summary.QuickStats.SsdSwappedMemory
+
+	if memUsage > 0 {
+		totalMemory := vm.Summary.Config.MemorySizeMB
+		memoryUtilization := float64(memUsage) / float64(totalMemory) * 100
+		v.mb.RecordVcenterVMMemoryUtilizationDataPoint(now, memoryUtilization)
+	}
 
 	v.mb.RecordVcenterVMMemoryUsageDataPoint(now, int64(memUsage))
 	v.mb.RecordVcenterVMMemoryBalloonedDataPoint(now, int64(balloonedMem))
@@ -80,6 +88,7 @@ func (v *vcenterMetricScraper) recordVMUsages(
 	var cpuUtilization float64
 
 	ncpu := vm.Config.Hardware.NumCPU
+
 	if cpuUsage != 0 {
 		// https://communities.vmware.com/t5/VMware-code-Documents/Resource-Management/ta-p/2783456
 		// VirtualMachine.runtime.maxCpuUsage is a property of the virtual machine, indicating the limit value.
@@ -94,7 +103,6 @@ func (v *vcenterMetricScraper) recordVMUsages(
 		}
 
 	}
-
 	v.mb.RecordVcenterVMCPUUsageDataPoint(now, int64(cpuUsage))
 	v.mb.RecordVcenterVMCPUUtilizationDataPoint(now, cpuUtilization)
 }
@@ -216,6 +224,7 @@ func (v *vcenterMetricScraper) processVMPerformanceMetrics(info *perfSampleResul
 		for _, val := range m.Value {
 			for j, nestedValue := range val.Value {
 				si := m.SampleInfo[j]
+				log.Println(val.Name, nestedValue)
 				switch val.Name {
 				// Performance monitoring level 1 metrics
 				case "net.bytesTx.average":
