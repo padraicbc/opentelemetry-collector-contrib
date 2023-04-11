@@ -68,6 +68,7 @@ type MetricsSettings struct {
 	VcenterVMMemorySwapped          MetricSettings `mapstructure:"vcenter.vm.memory.swapped"`
 	VcenterVMMemorySwappedSsd       MetricSettings `mapstructure:"vcenter.vm.memory.swapped_ssd"`
 	VcenterVMMemoryUsage            MetricSettings `mapstructure:"vcenter.vm.memory.usage"`
+	VcenterVMMemoryUtilization      MetricSettings `mapstructure:"vcenter.vm.memory.utilization"`
 	VcenterVMNetworkPacketCount     MetricSettings `mapstructure:"vcenter.vm.network.packet.count"`
 	VcenterVMNetworkThroughput      MetricSettings `mapstructure:"vcenter.vm.network.throughput"`
 	VcenterVMNetworkUsage           MetricSettings `mapstructure:"vcenter.vm.network.usage"`
@@ -178,6 +179,9 @@ func DefaultMetricsSettings() MetricsSettings {
 			Enabled: true,
 		},
 		VcenterVMMemoryUsage: MetricSettings{
+			Enabled: true,
+		},
+		VcenterVMMemoryUtilization: MetricSettings{
 			Enabled: true,
 		},
 		VcenterVMNetworkPacketCount: MetricSettings{
@@ -2148,6 +2152,55 @@ func newMetricVcenterVMMemoryUsage(settings MetricSettings) metricVcenterVMMemor
 	return m
 }
 
+type metricVcenterVMMemoryUtilization struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills vcenter.vm.memory.utilization metric with initial data.
+func (m *metricVcenterVMMemoryUtilization) init() {
+	m.data.SetName("vcenter.vm.memory.utilization")
+	m.data.SetDescription("The memory utilization of the VM.")
+	m.data.SetUnit("%")
+	m.data.SetEmptyGauge()
+}
+
+func (m *metricVcenterVMMemoryUtilization) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val float64) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetDoubleValue(val)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricVcenterVMMemoryUtilization) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricVcenterVMMemoryUtilization) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricVcenterVMMemoryUtilization(settings MetricSettings) metricVcenterVMMemoryUtilization {
+	m := metricVcenterVMMemoryUtilization{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricVcenterVMNetworkPacketCount struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	settings MetricSettings // metric settings provided by user.
@@ -2355,6 +2408,7 @@ type MetricsBuilder struct {
 	metricVcenterVMMemorySwapped          metricVcenterVMMemorySwapped
 	metricVcenterVMMemorySwappedSsd       metricVcenterVMMemorySwappedSsd
 	metricVcenterVMMemoryUsage            metricVcenterVMMemoryUsage
+	metricVcenterVMMemoryUtilization      metricVcenterVMMemoryUtilization
 	metricVcenterVMNetworkPacketCount     metricVcenterVMNetworkPacketCount
 	metricVcenterVMNetworkThroughput      metricVcenterVMNetworkThroughput
 	metricVcenterVMNetworkUsage           metricVcenterVMNetworkUsage
@@ -2425,6 +2479,7 @@ func NewMetricsBuilder(mbc MetricsBuilderConfig, settings receiver.CreateSetting
 		metricVcenterVMMemorySwapped:          newMetricVcenterVMMemorySwapped(mbc.Metrics.VcenterVMMemorySwapped),
 		metricVcenterVMMemorySwappedSsd:       newMetricVcenterVMMemorySwappedSsd(mbc.Metrics.VcenterVMMemorySwappedSsd),
 		metricVcenterVMMemoryUsage:            newMetricVcenterVMMemoryUsage(mbc.Metrics.VcenterVMMemoryUsage),
+		metricVcenterVMMemoryUtilization:      newMetricVcenterVMMemoryUtilization(mbc.Metrics.VcenterVMMemoryUtilization),
 		metricVcenterVMNetworkPacketCount:     newMetricVcenterVMNetworkPacketCount(mbc.Metrics.VcenterVMNetworkPacketCount),
 		metricVcenterVMNetworkThroughput:      newMetricVcenterVMNetworkThroughput(mbc.Metrics.VcenterVMNetworkThroughput),
 		metricVcenterVMNetworkUsage:           newMetricVcenterVMNetworkUsage(mbc.Metrics.VcenterVMNetworkUsage),
@@ -2569,6 +2624,7 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricVcenterVMMemorySwapped.emit(ils.Metrics())
 	mb.metricVcenterVMMemorySwappedSsd.emit(ils.Metrics())
 	mb.metricVcenterVMMemoryUsage.emit(ils.Metrics())
+	mb.metricVcenterVMMemoryUtilization.emit(ils.Metrics())
 	mb.metricVcenterVMNetworkPacketCount.emit(ils.Metrics())
 	mb.metricVcenterVMNetworkThroughput.emit(ils.Metrics())
 	mb.metricVcenterVMNetworkUsage.emit(ils.Metrics())
@@ -2765,6 +2821,11 @@ func (mb *MetricsBuilder) RecordVcenterVMMemorySwappedSsdDataPoint(ts pcommon.Ti
 // RecordVcenterVMMemoryUsageDataPoint adds a data point to vcenter.vm.memory.usage metric.
 func (mb *MetricsBuilder) RecordVcenterVMMemoryUsageDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricVcenterVMMemoryUsage.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordVcenterVMMemoryUtilizationDataPoint adds a data point to vcenter.vm.memory.utilization metric.
+func (mb *MetricsBuilder) RecordVcenterVMMemoryUtilizationDataPoint(ts pcommon.Timestamp, val float64) {
+	mb.metricVcenterVMMemoryUtilization.recordDataPoint(mb.startTime, ts, val)
 }
 
 // RecordVcenterVMNetworkPacketCountDataPoint adds a data point to vcenter.vm.network.packet.count metric.
