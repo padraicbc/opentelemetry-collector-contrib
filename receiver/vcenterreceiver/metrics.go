@@ -101,10 +101,10 @@ func (v *vcenterMetricScraper) recordVMUsages(
 			cpuUtilization = 100 * float64(cpuUsage) / float64(ncpu*hs.Summary.Hardware.CpuMhz)
 
 		}
-
+		v.mb.RecordVcenterVMCPUUsageDataPoint(now, int64(cpuUsage))
+		v.mb.RecordVcenterVMCPUUtilizationDataPoint(now, cpuUtilization)
 	}
-	v.mb.RecordVcenterVMCPUUsageDataPoint(now, int64(cpuUsage))
-	v.mb.RecordVcenterVMCPUUtilizationDataPoint(now, cpuUtilization)
+
 }
 
 func (v *vcenterMetricScraper) recordDatastoreProperties(
