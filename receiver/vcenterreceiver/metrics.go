@@ -16,7 +16,6 @@ package vcenterreceiver // import "github.com/open-telemetry/opentelemetry-colle
 
 import (
 	"context"
-	"log"
 
 	"github.com/vmware/govmomi/performance"
 	"github.com/vmware/govmomi/vim25/mo"
@@ -224,7 +223,7 @@ func (v *vcenterMetricScraper) processVMPerformanceMetrics(info *perfSampleResul
 		for _, val := range m.Value {
 			for j, nestedValue := range val.Value {
 				si := m.SampleInfo[j]
-				log.Println(val.Name, nestedValue)
+
 				switch val.Name {
 				// Performance monitoring level 1 metrics
 				case "net.bytesTx.average":
