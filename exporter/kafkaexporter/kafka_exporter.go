@@ -18,6 +18,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"net/url"
+	"os"
 
 	"github.com/Shopify/sarama"
 	"go.opentelemetry.io/collector/consumer/consumererror"
@@ -26,6 +29,7 @@ import (
 	"go.opentelemetry.io/collector/pdata/pmetric"
 	"go.opentelemetry.io/collector/pdata/ptrace"
 	"go.uber.org/zap"
+	"golang.org/x/net/proxy"
 )
 
 var errUnrecognizedEncoding = fmt.Errorf("unrecognized encoding")
@@ -142,6 +146,25 @@ func newSaramaProducer(config Config) (sarama.SyncProducer, error) {
 	c.Metadata.Retry.Backoff = config.Metadata.Retry.Backoff
 	c.Producer.MaxMessageBytes = config.Producer.MaxMessageBytes
 	c.Producer.Flush.MaxMessages = config.Producer.FlushMaxMessages
+
+	for _, u := range []string{os.Getenv("HTTP_PROXY"), os.Getenv("HTTPS_PROXY")} {
+		if u != "" {
+			httpProxyURI, err := url.Parse(u)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			httpDialer, err := proxy.FromURL(httpProxyURI, proxy.Direct)
+			c.Net.Proxy = struct {
+				Enable bool
+				Dialer proxy.Dialer
+			}{
+				Enable: true,
+				Dialer: httpDialer,
+			}
+			break
+		}
+	}
 
 	if config.ProtocolVersion != "" {
 		version, err := sarama.ParseKafkaVersion(config.ProtocolVersion)
