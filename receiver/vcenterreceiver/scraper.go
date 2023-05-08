@@ -314,9 +314,10 @@ func (v *vcenterMetricScraper) collectVMs(
 			metadata.WithVcenterHostName(hostname),
 			// moVM.Guest.GuestState too? https://vdc-download.vmware.com/vmwb-repository/dcr-public/790263bc-bd30-48f1-af12-ed36055d718b/e5f17bfc-ecba-40bf-a04f-376bbb11e811/vim.vm.GuestInfo.html
 			metadata.WithVcenterVMPowerState(string(moVM.Runtime.PowerState)),
-			metadata.WithVcenterVMMemoryAllowcation(int64(moVM.Summary.Config.MemorySizeMB)),
+			metadata.WithVcenterVMMemoryAllowcation(int64(moVM.Config.Hardware.MemoryMB)),
+			// Maybe moVM.Config.Hardware.NumCPU instead of cores?
 			metadata.WithVcenterVMCPUCores(int64(moVM.Config.Hardware.NumCoresPerSocket)),
-			metadata.WithVcenterVMStorageAllowcation(int64(moVM.Config.Hardware.MemoryMB)),
+			metadata.WithVcenterVMStorageAllowcation(int64(moVM.Summary.Storage.Committed + moVM.Summary.Storage.Uncommitted)),
 		}
 
 		if moVM.Guest != nil {
