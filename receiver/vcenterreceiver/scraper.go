@@ -305,12 +305,7 @@ func (v *vcenterMetricScraper) collectVMs(
 		}
 
 		vmUUID := moVM.Config.InstanceUuid
-		// \nIP %v\nOS %v
 		v.collectVM(ctx, colTime, moVM, hwSum, errs)
-		fmt.Printf("Power state: %v\nMem alloc: %v\ncores: %v\nIP: %v\nOS: %v",
-			moVM.Runtime.PowerState,
-			moVM.Summary.Config.MemorySizeMB,
-			moVM.Config.Hardware.NumCoresPerSocket, moVM.Guest.IpAddress, moVM.Guest.GuestFullName)
 
 		var opts = []metadata.ResourceMetricsOption{
 			metadata.WithVcenterVMName(vm.Name()),
