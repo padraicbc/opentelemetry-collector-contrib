@@ -17,7 +17,6 @@ package vcenterreceiver // import "github.com/open-telemetry/opentelemetry-colle
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/vmware/govmomi/object"
@@ -308,10 +307,10 @@ func (v *vcenterMetricScraper) collectVMs(
 		vmUUID := moVM.Config.InstanceUuid
 		// \nIP %v\nOS %v
 		v.collectVM(ctx, colTime, moVM, hwSum, errs)
-		log.Printf("Power state: %v\nMem alloc %v\ncores %v\nIP %v\nOS %v",
-			moVM.Summary.Config.MemorySizeMB,
+		fmt.Printf("Power state: %v\nMem alloc: %v\ncores: %v\nIP: %v\nOS: %v",
 			moVM.Runtime.PowerState,
-			moVM.Config.Hardware.NumCoresPerSocket, moVM.Guest.IpAddress, moVM.Guest.GuestFamily)
+			moVM.Summary.Config.MemorySizeMB,
+			moVM.Config.Hardware.NumCoresPerSocket, moVM.Guest.IpAddress, moVM.Guest.GuestFullName)
 
 		var opts = []metadata.ResourceMetricsOption{
 			metadata.WithVcenterVMName(vm.Name()),
@@ -326,8 +325,9 @@ func (v *vcenterMetricScraper) collectVMs(
 		}
 
 		if moVM.Guest != nil {
-			opts = append(opts, metadata.WithVcenterVMIP(moVM.Guest.IpAddress),
-				metadata.WithVcenterVMOs(moVM.Guest.GuestFamily))
+			opts = append(opts,
+				metadata.WithVcenterVMIP(moVM.Guest.IpAddress),
+				metadata.WithVcenterVMOs(moVM.Guest.GuestFullName))
 
 		}
 		v.mb.EmitForResource(
