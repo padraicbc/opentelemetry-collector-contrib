@@ -149,6 +149,7 @@ func newSaramaProducer(config Config) (sarama.SyncProducer, error) {
 
 	if p := os.Getenv("SARAMA_PROXY"); p != "" {
 
+		log.Printf("using proxy: %s", p)
 		httpProxyURI, err := url.Parse(p)
 		if err != nil {
 			log.Fatal(err)
