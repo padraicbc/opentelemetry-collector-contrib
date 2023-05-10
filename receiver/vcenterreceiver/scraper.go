@@ -309,8 +309,6 @@ func (v *vcenterMetricScraper) collectVMs(
 
 		var opts = []metadata.ResourceMetricsOption{
 			metadata.WithVcenterVMIsTemplate(moVM.Summary.Config.Template),
-			// Guest  NotRunning, Resetting, Running, ShuttingDown, Standby, Unknown
-			metadata.WithVcenterVMGuestState(moVM.Guest.GuestState),
 			metadata.WithVcenterVMName(vm.Name()),
 			metadata.WithVcenterVMID(vmUUID),
 			metadata.WithVcenterClusterName(cluster.Name()),
@@ -328,6 +326,8 @@ func (v *vcenterMetricScraper) collectVMs(
 
 		if moVM.Guest != nil {
 			opts = append(opts,
+				// Guest  NotRunning, Resetting, Running, ShuttingDown, Standby, Unknown
+				metadata.WithVcenterVMGuestState(moVM.Guest.GuestState),
 				metadata.WithVcenterVMIP(moVM.Guest.IpAddress),
 				metadata.WithVcenterVMOs(moVM.Guest.GuestFullName))
 
