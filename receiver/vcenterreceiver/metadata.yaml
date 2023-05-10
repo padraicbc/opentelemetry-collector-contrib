@@ -31,6 +31,34 @@ resource_attributes:
     description: The instance UUID of the virtual machine.
     enabled: true
     type: string
+  vcenter.vm.power.state:
+    enabled: true
+    description:  The Power State of the VM.
+    type: string
+  vcenter.vm.cpu.cores:
+    enabled: false
+    description: The cpu cores of the VM(NumCoresPerSocket).
+    type: int
+  vcenter.vm.memory.allowcation:
+    enabled: true
+    description: The memory allocation of the VM.
+    type: int
+  vcenter.vm.storage.allowcation:
+    enabled: true
+    description: The disk allocation of the VM.
+    type: int
+  vcenter.vm.ip:
+    enabled: true
+    description: The IP of the VM.
+    type: string
+  vcenter.vm.os:
+    enabled: true
+    description: The OS of the VM.
+    type: string
+    
+
+    
+
 
 attributes:
   disk_state:

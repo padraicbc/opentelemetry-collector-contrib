@@ -17,6 +17,7 @@ package vcenterreceiver // import "github.com/open-telemetry/opentelemetry-colle
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/vmware/govmomi/object"
@@ -263,6 +264,7 @@ func (v *vcenterMetricScraper) collectVMs(
 			"config",
 			"runtime",
 			"summary",
+			"guest",
 		}, &moVM)
 
 		if err != nil {
@@ -302,14 +304,34 @@ func (v *vcenterMetricScraper) collectVMs(
 			errs.AddPartial(1, fmt.Errorf("vm config empty for %s", hostname))
 			continue
 		}
-		vmUUID := moVM.Config.InstanceUuid
 
+		vmUUID := moVM.Config.InstanceUuid
+		// \nIP %v\nOS %v
 		v.collectVM(ctx, colTime, moVM, hwSum, errs)
-		v.mb.EmitForResource(
+		log.Printf("Power state: %v\nMem alloc %v\ncores %v\nIP %v\nOS %v",
+			moVM.Summary.Config.MemorySizeMB,
+			moVM.Runtime.PowerState,
+			moVM.Config.Hardware.NumCoresPerSocket, moVM.Guest.IpAddress, moVM.Guest.GuestFamily)
+
+		var opts = []metadata.ResourceMetricsOption{
 			metadata.WithVcenterVMName(vm.Name()),
 			metadata.WithVcenterVMID(vmUUID),
 			metadata.WithVcenterClusterName(cluster.Name()),
 			metadata.WithVcenterHostName(hostname),
+			// moVM.Guest.GuestState too? https://vdc-download.vmware.com/vmwb-repository/dcr-public/790263bc-bd30-48f1-af12-ed36055d718b/e5f17bfc-ecba-40bf-a04f-376bbb11e811/vim.vm.GuestInfo.html
+			metadata.WithVcenterVMPowerState(string(moVM.Runtime.PowerState)),
+			metadata.WithVcenterVMMemoryAllowcation(int64(moVM.Summary.Config.MemorySizeMB)),
+			metadata.WithVcenterVMCPUCores(int64(moVM.Config.Hardware.NumCoresPerSocket)),
+			metadata.WithVcenterVMStorageAllowcation(int64(moVM.Config.Hardware.MemoryMB)),
+		}
+
+		if moVM.Guest != nil {
+			opts = append(opts, metadata.WithVcenterVMIP(moVM.Guest.IpAddress),
+				metadata.WithVcenterVMOs(moVM.Guest.GuestFamily))
+
+		}
+		v.mb.EmitForResource(
+			opts...,
 		)
 	}
 	return poweredOnVMs, poweredOffVMs

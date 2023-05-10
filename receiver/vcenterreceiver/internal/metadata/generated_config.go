@@ -195,12 +195,18 @@ type ResourceAttributeConfig struct {
 
 // ResourceAttributesConfig provides config for vcenterreceiver resource attributes.
 type ResourceAttributesConfig struct {
-	VcenterClusterName      ResourceAttributeConfig `mapstructure:"vcenter.cluster.name"`
-	VcenterDatastoreName    ResourceAttributeConfig `mapstructure:"vcenter.datastore.name"`
-	VcenterHostName         ResourceAttributeConfig `mapstructure:"vcenter.host.name"`
-	VcenterResourcePoolName ResourceAttributeConfig `mapstructure:"vcenter.resource_pool.name"`
-	VcenterVMID             ResourceAttributeConfig `mapstructure:"vcenter.vm.id"`
-	VcenterVMName           ResourceAttributeConfig `mapstructure:"vcenter.vm.name"`
+	VcenterClusterName          ResourceAttributeConfig `mapstructure:"vcenter.cluster.name"`
+	VcenterDatastoreName        ResourceAttributeConfig `mapstructure:"vcenter.datastore.name"`
+	VcenterHostName             ResourceAttributeConfig `mapstructure:"vcenter.host.name"`
+	VcenterResourcePoolName     ResourceAttributeConfig `mapstructure:"vcenter.resource_pool.name"`
+	VcenterVMCPUCores           ResourceAttributeConfig `mapstructure:"vcenter.vm.cpu.cores"`
+	VcenterVMID                 ResourceAttributeConfig `mapstructure:"vcenter.vm.id"`
+	VcenterVMIP                 ResourceAttributeConfig `mapstructure:"vcenter.vm.ip"`
+	VcenterVMMemoryAllowcation  ResourceAttributeConfig `mapstructure:"vcenter.vm.memory.allowcation"`
+	VcenterVMName               ResourceAttributeConfig `mapstructure:"vcenter.vm.name"`
+	VcenterVMOs                 ResourceAttributeConfig `mapstructure:"vcenter.vm.os"`
+	VcenterVMPowerState         ResourceAttributeConfig `mapstructure:"vcenter.vm.power.state"`
+	VcenterVMStorageAllowcation ResourceAttributeConfig `mapstructure:"vcenter.vm.storage.allowcation"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -217,10 +223,28 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		VcenterResourcePoolName: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		VcenterVMCPUCores: ResourceAttributeConfig{
+			Enabled: false,
+		},
 		VcenterVMID: ResourceAttributeConfig{
 			Enabled: true,
 		},
+		VcenterVMIP: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		VcenterVMMemoryAllowcation: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		VcenterVMName: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		VcenterVMOs: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		VcenterVMPowerState: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		VcenterVMStorageAllowcation: ResourceAttributeConfig{
 			Enabled: true,
 		},
 	}

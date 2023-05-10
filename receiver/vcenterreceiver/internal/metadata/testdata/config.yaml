@@ -88,9 +88,21 @@ all_set:
       enabled: true
     vcenter.resource_pool.name:
       enabled: true
+    vcenter.vm.cpu.cores:
+      enabled: true
     vcenter.vm.id:
       enabled: true
+    vcenter.vm.ip:
+      enabled: true
+    vcenter.vm.memory.allowcation:
+      enabled: true
     vcenter.vm.name:
+      enabled: true
+    vcenter.vm.os:
+      enabled: true
+    vcenter.vm.power.state:
+      enabled: true
+    vcenter.vm.storage.allowcation:
       enabled: true
 none_set:
   metrics:
@@ -181,7 +193,19 @@ none_set:
       enabled: false
     vcenter.resource_pool.name:
       enabled: false
+    vcenter.vm.cpu.cores:
+      enabled: false
     vcenter.vm.id:
       enabled: false
+    vcenter.vm.ip:
+      enabled: false
+    vcenter.vm.memory.allowcation:
+      enabled: false
     vcenter.vm.name:
+      enabled: false
+    vcenter.vm.os:
+      enabled: false
+    vcenter.vm.power.state:
+      enabled: false
+    vcenter.vm.storage.allowcation:
       enabled: false

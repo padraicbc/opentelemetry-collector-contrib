@@ -2296,6 +2296,15 @@ func WithVcenterResourcePoolName(val string) ResourceMetricsOption {
 	}
 }
 
+// WithVcenterVMCPUCores sets provided value as "vcenter.vm.cpu.cores" attribute for current resource.
+func WithVcenterVMCPUCores(val int64) ResourceMetricsOption {
+	return func(rac ResourceAttributesConfig, rm pmetric.ResourceMetrics) {
+		if rac.VcenterVMCPUCores.Enabled {
+			rm.Resource().Attributes().PutInt("vcenter.vm.cpu.cores", val)
+		}
+	}
+}
+
 // WithVcenterVMID sets provided value as "vcenter.vm.id" attribute for current resource.
 func WithVcenterVMID(val string) ResourceMetricsOption {
 	return func(rac ResourceAttributesConfig, rm pmetric.ResourceMetrics) {
@@ -2305,11 +2314,56 @@ func WithVcenterVMID(val string) ResourceMetricsOption {
 	}
 }
 
+// WithVcenterVMIP sets provided value as "vcenter.vm.ip" attribute for current resource.
+func WithVcenterVMIP(val string) ResourceMetricsOption {
+	return func(rac ResourceAttributesConfig, rm pmetric.ResourceMetrics) {
+		if rac.VcenterVMIP.Enabled {
+			rm.Resource().Attributes().PutStr("vcenter.vm.ip", val)
+		}
+	}
+}
+
+// WithVcenterVMMemoryAllowcation sets provided value as "vcenter.vm.memory.allowcation" attribute for current resource.
+func WithVcenterVMMemoryAllowcation(val int64) ResourceMetricsOption {
+	return func(rac ResourceAttributesConfig, rm pmetric.ResourceMetrics) {
+		if rac.VcenterVMMemoryAllowcation.Enabled {
+			rm.Resource().Attributes().PutInt("vcenter.vm.memory.allowcation", val)
+		}
+	}
+}
+
 // WithVcenterVMName sets provided value as "vcenter.vm.name" attribute for current resource.
 func WithVcenterVMName(val string) ResourceMetricsOption {
 	return func(rac ResourceAttributesConfig, rm pmetric.ResourceMetrics) {
 		if rac.VcenterVMName.Enabled {
 			rm.Resource().Attributes().PutStr("vcenter.vm.name", val)
+		}
+	}
+}
+
+// WithVcenterVMOs sets provided value as "vcenter.vm.os" attribute for current resource.
+func WithVcenterVMOs(val string) ResourceMetricsOption {
+	return func(rac ResourceAttributesConfig, rm pmetric.ResourceMetrics) {
+		if rac.VcenterVMOs.Enabled {
+			rm.Resource().Attributes().PutStr("vcenter.vm.os", val)
+		}
+	}
+}
+
+// WithVcenterVMPowerState sets provided value as "vcenter.vm.power.state" attribute for current resource.
+func WithVcenterVMPowerState(val string) ResourceMetricsOption {
+	return func(rac ResourceAttributesConfig, rm pmetric.ResourceMetrics) {
+		if rac.VcenterVMPowerState.Enabled {
+			rm.Resource().Attributes().PutStr("vcenter.vm.power.state", val)
+		}
+	}
+}
+
+// WithVcenterVMStorageAllowcation sets provided value as "vcenter.vm.storage.allowcation" attribute for current resource.
+func WithVcenterVMStorageAllowcation(val int64) ResourceMetricsOption {
+	return func(rac ResourceAttributesConfig, rm pmetric.ResourceMetrics) {
+		if rac.VcenterVMStorageAllowcation.Enabled {
+			rm.Resource().Attributes().PutInt("vcenter.vm.storage.allowcation", val)
 		}
 	}
 }
