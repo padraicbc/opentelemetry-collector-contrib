@@ -432,10 +432,12 @@ The memory utilization of the VM.
 | vcenter.host.name | The hostname of the vCenter ESXi host. | Any Str | true |
 | vcenter.resource_pool.name | The name of the resource pool. | Any Str | true |
 | vcenter.vm.cpu.cores | The cpu cores of the VM(NumCoresPerSocket). | Any Int | false |
+| vcenter.vm.guest_state | State of VM Guest. | Any Str | true |
 | vcenter.vm.id | The instance UUID of the virtual machine. | Any Str | true |
 | vcenter.vm.ip | The IP of the VM. | Any Str | true |
-| vcenter.vm.memory.allowcation | The memory allocation of the VM. | Any Int | true |
+| vcenter.vm.is_template | Flag set if VM is a template. | Any Bool | true |
+| vcenter.vm.memory.allocation | The memory allocation of the VM. | Any Int | true |
 | vcenter.vm.name | The name of the virtual machine. | Any Str | true |
 | vcenter.vm.os | The OS of the VM. | Any Str | true |
 | vcenter.vm.power.state | The Power State of the VM. | Any Str | true |
-| vcenter.vm.storage.allowcation | The disk allocation of the VM. | Any Int | true |
+| vcenter.vm.storage.allocation | The disk allocation of the VM in bytes. | Any Int | true |

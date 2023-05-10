@@ -39,13 +39,13 @@ resource_attributes:
     enabled: false
     description: The cpu cores of the VM(NumCoresPerSocket).
     type: int
-  vcenter.vm.memory.allowcation:
+  vcenter.vm.memory.allocation:
     enabled: true
     description: The memory allocation of the VM.
     type: int
-  vcenter.vm.storage.allowcation:
+  vcenter.vm.storage.allocation:
     enabled: true
-    description: The disk allocation of the VM.
+    description: The disk allocation of the VM in bytes.
     type: int
   vcenter.vm.ip:
     enabled: true
@@ -55,10 +55,21 @@ resource_attributes:
     enabled: true
     description: The OS of the VM.
     type: string
-    
-
-    
-
+  vcenter.vm.is_template:
+    enabled: true
+    description: Flag set if VM is a template.
+    type: bool   
+  vcenter.vm.guest_state:
+    enabled: true
+    description: State of VM Guest.
+    type: string
+    # enum:
+    # - NotRunning
+    # - Resetting
+    # - Running
+    # - ShuttingDown
+    # - Standby
+    # - Unknown
 
 attributes:
   disk_state:

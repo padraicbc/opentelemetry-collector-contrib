@@ -195,18 +195,20 @@ type ResourceAttributeConfig struct {
 
 // ResourceAttributesConfig provides config for vcenterreceiver resource attributes.
 type ResourceAttributesConfig struct {
-	VcenterClusterName          ResourceAttributeConfig `mapstructure:"vcenter.cluster.name"`
-	VcenterDatastoreName        ResourceAttributeConfig `mapstructure:"vcenter.datastore.name"`
-	VcenterHostName             ResourceAttributeConfig `mapstructure:"vcenter.host.name"`
-	VcenterResourcePoolName     ResourceAttributeConfig `mapstructure:"vcenter.resource_pool.name"`
-	VcenterVMCPUCores           ResourceAttributeConfig `mapstructure:"vcenter.vm.cpu.cores"`
-	VcenterVMID                 ResourceAttributeConfig `mapstructure:"vcenter.vm.id"`
-	VcenterVMIP                 ResourceAttributeConfig `mapstructure:"vcenter.vm.ip"`
-	VcenterVMMemoryAllowcation  ResourceAttributeConfig `mapstructure:"vcenter.vm.memory.allowcation"`
-	VcenterVMName               ResourceAttributeConfig `mapstructure:"vcenter.vm.name"`
-	VcenterVMOs                 ResourceAttributeConfig `mapstructure:"vcenter.vm.os"`
-	VcenterVMPowerState         ResourceAttributeConfig `mapstructure:"vcenter.vm.power.state"`
-	VcenterVMStorageAllowcation ResourceAttributeConfig `mapstructure:"vcenter.vm.storage.allowcation"`
+	VcenterClusterName         ResourceAttributeConfig `mapstructure:"vcenter.cluster.name"`
+	VcenterDatastoreName       ResourceAttributeConfig `mapstructure:"vcenter.datastore.name"`
+	VcenterHostName            ResourceAttributeConfig `mapstructure:"vcenter.host.name"`
+	VcenterResourcePoolName    ResourceAttributeConfig `mapstructure:"vcenter.resource_pool.name"`
+	VcenterVMCPUCores          ResourceAttributeConfig `mapstructure:"vcenter.vm.cpu.cores"`
+	VcenterVMGuestState        ResourceAttributeConfig `mapstructure:"vcenter.vm.guest_state"`
+	VcenterVMID                ResourceAttributeConfig `mapstructure:"vcenter.vm.id"`
+	VcenterVMIP                ResourceAttributeConfig `mapstructure:"vcenter.vm.ip"`
+	VcenterVMIsTemplate        ResourceAttributeConfig `mapstructure:"vcenter.vm.is_template"`
+	VcenterVMMemoryAllocation  ResourceAttributeConfig `mapstructure:"vcenter.vm.memory.allocation"`
+	VcenterVMName              ResourceAttributeConfig `mapstructure:"vcenter.vm.name"`
+	VcenterVMOs                ResourceAttributeConfig `mapstructure:"vcenter.vm.os"`
+	VcenterVMPowerState        ResourceAttributeConfig `mapstructure:"vcenter.vm.power.state"`
+	VcenterVMStorageAllocation ResourceAttributeConfig `mapstructure:"vcenter.vm.storage.allocation"`
 }
 
 func DefaultResourceAttributesConfig() ResourceAttributesConfig {
@@ -226,13 +228,19 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		VcenterVMCPUCores: ResourceAttributeConfig{
 			Enabled: false,
 		},
+		VcenterVMGuestState: ResourceAttributeConfig{
+			Enabled: true,
+		},
 		VcenterVMID: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		VcenterVMIP: ResourceAttributeConfig{
 			Enabled: true,
 		},
-		VcenterVMMemoryAllowcation: ResourceAttributeConfig{
+		VcenterVMIsTemplate: ResourceAttributeConfig{
+			Enabled: true,
+		},
+		VcenterVMMemoryAllocation: ResourceAttributeConfig{
 			Enabled: true,
 		},
 		VcenterVMName: ResourceAttributeConfig{
@@ -244,7 +252,7 @@ func DefaultResourceAttributesConfig() ResourceAttributesConfig {
 		VcenterVMPowerState: ResourceAttributeConfig{
 			Enabled: true,
 		},
-		VcenterVMStorageAllowcation: ResourceAttributeConfig{
+		VcenterVMStorageAllocation: ResourceAttributeConfig{
 			Enabled: true,
 		},
 	}

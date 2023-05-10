@@ -209,7 +209,7 @@ func TestMetricsBuilder(t *testing.T) {
 			allMetricsCount++
 			mb.RecordVcenterVMNetworkUsageDataPoint(ts, 1)
 
-			metrics := mb.Emit(WithVcenterClusterName("attr-val"), WithVcenterDatastoreName("attr-val"), WithVcenterHostName("attr-val"), WithVcenterResourcePoolName("attr-val"), WithVcenterVMCPUCores(1), WithVcenterVMID("attr-val"), WithVcenterVMIP("attr-val"), WithVcenterVMMemoryAllowcation(1), WithVcenterVMName("attr-val"), WithVcenterVMOs("attr-val"), WithVcenterVMPowerState("attr-val"), WithVcenterVMStorageAllowcation(1))
+			metrics := mb.Emit(WithVcenterClusterName("attr-val"), WithVcenterDatastoreName("attr-val"), WithVcenterHostName("attr-val"), WithVcenterResourcePoolName("attr-val"), WithVcenterVMCPUCores(1), WithVcenterVMGuestState("attr-val"), WithVcenterVMID("attr-val"), WithVcenterVMIP("attr-val"), WithVcenterVMIsTemplate(true), WithVcenterVMMemoryAllocation(1), WithVcenterVMName("attr-val"), WithVcenterVMOs("attr-val"), WithVcenterVMPowerState("attr-val"), WithVcenterVMStorageAllocation(1))
 
 			if test.configSet == testSetNone {
 				assert.Equal(t, 0, metrics.ResourceMetrics().Len())
@@ -255,6 +255,13 @@ func TestMetricsBuilder(t *testing.T) {
 				enabledAttrCount++
 				assert.EqualValues(t, 1, attrVal.Int())
 			}
+			attrVal, ok = rm.Resource().Attributes().Get("vcenter.vm.guest_state")
+			attrCount++
+			assert.Equal(t, mb.resourceAttributesConfig.VcenterVMGuestState.Enabled, ok)
+			if mb.resourceAttributesConfig.VcenterVMGuestState.Enabled {
+				enabledAttrCount++
+				assert.EqualValues(t, "attr-val", attrVal.Str())
+			}
 			attrVal, ok = rm.Resource().Attributes().Get("vcenter.vm.id")
 			attrCount++
 			assert.Equal(t, mb.resourceAttributesConfig.VcenterVMID.Enabled, ok)
@@ -269,10 +276,17 @@ func TestMetricsBuilder(t *testing.T) {
 				enabledAttrCount++
 				assert.EqualValues(t, "attr-val", attrVal.Str())
 			}
-			attrVal, ok = rm.Resource().Attributes().Get("vcenter.vm.memory.allowcation")
+			attrVal, ok = rm.Resource().Attributes().Get("vcenter.vm.is_template")
 			attrCount++
-			assert.Equal(t, mb.resourceAttributesConfig.VcenterVMMemoryAllowcation.Enabled, ok)
-			if mb.resourceAttributesConfig.VcenterVMMemoryAllowcation.Enabled {
+			assert.Equal(t, mb.resourceAttributesConfig.VcenterVMIsTemplate.Enabled, ok)
+			if mb.resourceAttributesConfig.VcenterVMIsTemplate.Enabled {
+				enabledAttrCount++
+				assert.EqualValues(t, true, attrVal.Bool())
+			}
+			attrVal, ok = rm.Resource().Attributes().Get("vcenter.vm.memory.allocation")
+			attrCount++
+			assert.Equal(t, mb.resourceAttributesConfig.VcenterVMMemoryAllocation.Enabled, ok)
+			if mb.resourceAttributesConfig.VcenterVMMemoryAllocation.Enabled {
 				enabledAttrCount++
 				assert.EqualValues(t, 1, attrVal.Int())
 			}
@@ -297,15 +311,15 @@ func TestMetricsBuilder(t *testing.T) {
 				enabledAttrCount++
 				assert.EqualValues(t, "attr-val", attrVal.Str())
 			}
-			attrVal, ok = rm.Resource().Attributes().Get("vcenter.vm.storage.allowcation")
+			attrVal, ok = rm.Resource().Attributes().Get("vcenter.vm.storage.allocation")
 			attrCount++
-			assert.Equal(t, mb.resourceAttributesConfig.VcenterVMStorageAllowcation.Enabled, ok)
-			if mb.resourceAttributesConfig.VcenterVMStorageAllowcation.Enabled {
+			assert.Equal(t, mb.resourceAttributesConfig.VcenterVMStorageAllocation.Enabled, ok)
+			if mb.resourceAttributesConfig.VcenterVMStorageAllocation.Enabled {
 				enabledAttrCount++
 				assert.EqualValues(t, 1, attrVal.Int())
 			}
 			assert.Equal(t, enabledAttrCount, rm.Resource().Attributes().Len())
-			assert.Equal(t, attrCount, 12)
+			assert.Equal(t, attrCount, 14)
 
 			assert.Equal(t, 1, rm.ScopeMetrics().Len())
 			ms := rm.ScopeMetrics().At(0).Metrics()

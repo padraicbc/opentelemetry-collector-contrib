@@ -308,16 +308,22 @@ func (v *vcenterMetricScraper) collectVMs(
 		v.collectVM(ctx, colTime, moVM, hwSum, errs)
 
 		var opts = []metadata.ResourceMetricsOption{
+			metadata.WithVcenterVMIsTemplate(moVM.Summary.Config.Template),
+			// Guest  NotRunning, Resetting, Running, ShuttingDown, Standby, Unknown
+			metadata.WithVcenterVMGuestState(moVM.Guest.GuestState),
 			metadata.WithVcenterVMName(vm.Name()),
 			metadata.WithVcenterVMID(vmUUID),
 			metadata.WithVcenterClusterName(cluster.Name()),
 			metadata.WithVcenterHostName(hostname),
-			// moVM.Guest.GuestState too? https://vdc-download.vmware.com/vmwb-repository/dcr-public/790263bc-bd30-48f1-af12-ed36055d718b/e5f17bfc-ecba-40bf-a04f-376bbb11e811/vim.vm.GuestInfo.html
+			// Vm state https://vdc-repo.vmware.com/vmwb-repository/dcr-public/1ef6c336-7bef-477d-b9bb-caa1767d7e30/82521f49-9d9a-42b7-b19b-9e6cd9b30db1/vim.VirtualMachine.PowerState.html
+			// PoweredOff, PoweredOn, Suspeneded
 			metadata.WithVcenterVMPowerState(string(moVM.Runtime.PowerState)),
-			metadata.WithVcenterVMMemoryAllowcation(int64(moVM.Config.Hardware.MemoryMB)),
+			// Ram https://vdc-download.vmware.com/vmwb-repository/dcr-public/fa5d1ee7-fad5-4ebf-b150-bdcef1d38d35/a5e46da1-9b96-4f0c-a1d0-7b8f3ebfd4f5/doc/vim.vm.VirtualHardware.html
+			metadata.WithVcenterVMMemoryAllocation(int64(moVM.Config.Hardware.MemoryMB)),
 			// Maybe moVM.Config.Hardware.NumCPU instead of cores?
 			metadata.WithVcenterVMCPUCores(int64(moVM.Config.Hardware.NumCoresPerSocket)),
-			metadata.WithVcenterVMStorageAllowcation(int64(moVM.Summary.Storage.Committed + moVM.Summary.Storage.Uncommitted)),
+			// Doesn't seem to have any total so just add both.
+			metadata.WithVcenterVMStorageAllocation(int64(moVM.Summary.Storage.Committed + moVM.Summary.Storage.Uncommitted)),
 		}
 
 		if moVM.Guest != nil {

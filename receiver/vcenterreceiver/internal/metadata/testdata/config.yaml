@@ -90,11 +90,15 @@ all_set:
       enabled: true
     vcenter.vm.cpu.cores:
       enabled: true
+    vcenter.vm.guest_state:
+      enabled: true
     vcenter.vm.id:
       enabled: true
     vcenter.vm.ip:
       enabled: true
-    vcenter.vm.memory.allowcation:
+    vcenter.vm.is_template:
+      enabled: true
+    vcenter.vm.memory.allocation:
       enabled: true
     vcenter.vm.name:
       enabled: true
@@ -102,7 +106,7 @@ all_set:
       enabled: true
     vcenter.vm.power.state:
       enabled: true
-    vcenter.vm.storage.allowcation:
+    vcenter.vm.storage.allocation:
       enabled: true
 none_set:
   metrics:
@@ -195,11 +199,15 @@ none_set:
       enabled: false
     vcenter.vm.cpu.cores:
       enabled: false
+    vcenter.vm.guest_state:
+      enabled: false
     vcenter.vm.id:
       enabled: false
     vcenter.vm.ip:
       enabled: false
-    vcenter.vm.memory.allowcation:
+    vcenter.vm.is_template:
+      enabled: false
+    vcenter.vm.memory.allocation:
       enabled: false
     vcenter.vm.name:
       enabled: false
@@ -207,5 +215,5 @@ none_set:
       enabled: false
     vcenter.vm.power.state:
       enabled: false
-    vcenter.vm.storage.allowcation:
+    vcenter.vm.storage.allocation:
       enabled: false
