@@ -147,23 +147,22 @@ func newSaramaProducer(config Config) (sarama.SyncProducer, error) {
 	c.Producer.MaxMessageBytes = config.Producer.MaxMessageBytes
 	c.Producer.Flush.MaxMessages = config.Producer.FlushMaxMessages
 
-	for _, u := range []string{os.Getenv("HTTP_PROXY"), os.Getenv("HTTPS_PROXY")} {
-		if u != "" {
-			httpProxyURI, err := url.Parse(u)
-			if err != nil {
-				log.Fatal(err)
-			}
+	if p := os.Getenv("SARAMA_PROXY"); p != "" {
 
-			httpDialer, err := proxy.FromURL(httpProxyURI, proxy.Direct)
-			c.Net.Proxy = struct {
-				Enable bool
-				Dialer proxy.Dialer
-			}{
-				Enable: true,
-				Dialer: httpDialer,
-			}
-			break
+		httpProxyURI, err := url.Parse(p)
+		if err != nil {
+			log.Fatal(err)
 		}
+
+		httpDialer, err := proxy.FromURL(httpProxyURI, proxy.Direct)
+		c.Net.Proxy = struct {
+			Enable bool
+			Dialer proxy.Dialer
+		}{
+			Enable: true,
+			Dialer: httpDialer,
+		}
+
 	}
 
 	if config.ProtocolVersion != "" {
