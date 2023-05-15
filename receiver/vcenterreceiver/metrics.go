@@ -247,9 +247,6 @@ func (v *vcenterMetricScraper) processVMPerformanceMetrics(info *perfSampleResul
 					v.mb.RecordVcenterVMDiskLatencyAvgDataPoint(pcommon.NewTimestampFromTime(si.Timestamp), nestedValue, metadata.AttributeDiskDirectionWrite, metadata.AttributeDiskTypeVirtual)
 				case "disk.maxTotalLatency.latest":
 					v.mb.RecordVcenterVMDiskLatencyMaxDataPoint(pcommon.NewTimestampFromTime(si.Timestamp), nestedValue)
-				case "virtualDisk.totalReadLatency.maximum":
-					v.mb.RecordVcenterVMDiskLatencyAvgDataPoint(pcommon.NewTimestampFromTime(si.Timestamp), nestedValue, metadata.AttributeDiskDirectionRead, metadata.AttributeDiskTypeVirtual)
-
 				}
 			}
 		}
