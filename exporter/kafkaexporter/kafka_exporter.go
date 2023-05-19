@@ -152,10 +152,14 @@ func newSaramaProducer(config Config) (sarama.SyncProducer, error) {
 		log.Printf("using proxy: %s", p)
 		httpProxyURI, err := url.Parse(p)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		httpDialer, err := proxy.FromURL(httpProxyURI, proxy.Direct)
+		if err != nil {
+			return nil, err
+		}
+
 		c.Net.Proxy = struct {
 			Enable bool
 			Dialer proxy.Dialer
